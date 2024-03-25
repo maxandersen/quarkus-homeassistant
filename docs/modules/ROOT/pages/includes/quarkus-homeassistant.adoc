@@ -1,0 +1,63 @@
+
+:summaryTableId: quarkus-homeassistant
+[.configuration-legend]
+icon:lock[title=Fixed at build time] Configuration property fixed at build time - All other configuration properties are overridable at runtime
+[.configuration-reference.searchable, cols="80,.^10,.^10"]
+|===
+
+h|[[quarkus-homeassistant_configuration]]link:#quarkus-homeassistant_configuration[Configuration property]
+
+h|Type
+h|Default
+
+a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-homeassistant-enabled]]`link:#quarkus-homeassistant_quarkus-homeassistant-enabled[quarkus.homeassistant.enabled]`
+
+
+[.description]
+--
+If Dev Services for HomeAssistant has been explicitly enabled or disabled. Dev Services are generally enabled by default, unless there is an existing configuration present.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_HOMEASSISTANT_ENABLED+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_HOMEASSISTANT_ENABLED+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-homeassistant-image-name]]`link:#quarkus-homeassistant_quarkus-homeassistant-image-name[quarkus.homeassistant.image-name]`
+
+
+[.description]
+--
+The HomeAssistant container image to use.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_HOMEASSISTANT_IMAGE_NAME+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_HOMEASSISTANT_IMAGE_NAME+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|`ghcr.io/maxandersen/private-demo:main`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-homeassistant-verbose]]`link:#quarkus-homeassistant_quarkus-homeassistant-verbose[quarkus.homeassistant.verbose]`
+
+
+[.description]
+--
+Flag to control if verbose logging of HomeAssistant container is requested.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_HOMEASSISTANT_VERBOSE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_HOMEASSISTANT_VERBOSE+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+|===
