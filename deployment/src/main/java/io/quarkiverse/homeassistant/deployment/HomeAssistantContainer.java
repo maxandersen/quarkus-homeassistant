@@ -22,7 +22,7 @@ import io.quarkus.devservices.common.ConfigureUtil;
  */
 public final class HomeAssistantContainer extends GenericContainer<HomeAssistantContainer> {
 
-    public static final String CONFIG_HTTP_SERVER = HomeAssistantProcessor.FEATURE + ".http.server";
+    public static final String CONFIG_HTTP_SERVER = HomeAssistantProcessor.FEATURE + ".host";
 
     /**
      * Logger which will be used to capture container STDOUT and STDERR.

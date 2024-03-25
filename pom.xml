@@ -12,6 +12,7 @@
   <version>999-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Quarkus Homeassistant - Parent</name>
+  <description>HomeAssistant API for Quarkus</description>
   <modules>
     <module>deployment</module>
     <module>runtime</module>

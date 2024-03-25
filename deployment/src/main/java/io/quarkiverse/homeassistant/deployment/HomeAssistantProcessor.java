@@ -3,6 +3,7 @@ package io.quarkiverse.homeassistant.deployment;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.jandex.IndexView;
 import org.jboss.logging.Logger;
 
@@ -21,7 +22,7 @@ import io.quarkus.deployment.console.ConsoleInstalledBuildItem;
 import io.quarkus.deployment.console.StartupLogCompressor;
 import io.quarkus.deployment.dev.devservices.GlobalDevServicesConfig;
 import io.quarkus.deployment.logging.LoggingSetupBuildItem;
-
+import org.eclipse.microprofile.config.Config;
 /**
  * Starts a homeassistant server as dev service if needed.
  */
@@ -67,22 +68,6 @@ public class HomeAssistantProcessor {
             cfg = null;
         }
 
-        StartupLogCompressor compressor = new StartupLogCompressor(
-                (launchMode.isTest() ? "(test) " : "") + "homeassistant Dev Services Starting:",
-                consoleInstalledBuildItem, loggingSetupBuildItem);
-        try {
-            devService = starthomeassistant(dockerStatusBuildItem, homeassistantConfig, devServicesConfig,
-                    !devServicesSharedNetworkBuildItem.isEmpty(), combinedIndexBuildItem.getIndex());
-            if (devService == null) {
-                compressor.closeAndDumpCaptured();
-            } else {
-                compressor.close();
-            }
-        } catch (Throwable t) {
-            compressor.closeAndDumpCaptured();
-            throw new RuntimeException(t);
-        }
-
         if (devService == null) {
             return null;
         }
@@ -115,14 +100,19 @@ public class HomeAssistantProcessor {
     private DevServicesResultBuildItem.RunningDevService starthomeassistant(DockerStatusBuildItem dockerStatusBuildItem,
             HomeAssistantConfig homeassistantConfig, GlobalDevServicesConfig devServicesConfig, boolean useSharedNetwork,
             IndexView index) {
+
         if (!homeassistantConfig.enabled()) {
             // explicitly disabled
-            log.warn("Not starting dev services for homeassistant, as it has been disabled in the config.");
+            log.warn("Not starting dev services for HomeAssistant, as it has been disabled in the config.");
             return null;
         }
 
+        if (userConfigured()) {
+
+        }
+
         if (!dockerStatusBuildItem.isDockerAvailable()) {
-            log.warn("Docker isn't working, not starting dev services for homeassistant.");
+            log.warn("Docker isn't working, not starting dev services for HomeAssistant.");
             return null;
         }
 
@@ -134,6 +124,16 @@ public class HomeAssistantProcessor {
                 homeassistant.getContainerId(),
                 homeassistant::close,
                 homeassistant.getExposedConfig());
+    }
+
+    private boolean userConfigured() {
+        Config config = ConfigProvider.getConfig();
+        String token = config.getValue("quarkus.homeassistant.token", String.class);
+
+        if(token==null) {
+            return false;
+        }
+        return false;
     }
 
     private void shutdown() {

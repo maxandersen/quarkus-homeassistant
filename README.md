@@ -2,24 +2,46 @@
 
 [![Version](https://img.shields.io/maven-central/v/io.quarkiverse.homeassistant/quarkus-homeassistant?logo=apache-maven&style=flat-square)](https://search.maven.org/artifact/io.quarkiverse.homeassistant/quarkus-homeassistant)
 
-## Welcome to Quarkiverse!
+This extension allows you to interact with [Home Assistant](https://www.home-assistant.io/) from Quarkus applications.
 
-Congratulations and thank you for creating a new Quarkus extension project in Quarkiverse!
+## Work-in-progress
 
-Feel free to replace this content with the proper description of your new project and necessary instructions how to use and contribute to it.
+This extension is currently a work-in-progress and although it is functional, expect its API's and approach to change as we refine it.
 
-You can find the basic info, Quarkiverse policies and conventions in [the Quarkiverse wiki](https://github.com/quarkiverse/quarkiverse/wiki).
+## Features
 
-In case you are creating a Quarkus extension project for the first time, please follow [Building My First Extension](https://quarkus.io/guides/building-my-first-extension) guide.
+Below are the features that are currently available and planned for this extension:
 
-Other useful articles related to Quarkus extension development can be found under the [Writing Extensions](https://quarkus.io/guides/#writing-extensions) guide category on the [Quarkus.io](https://quarkus.io) website.
+- [x] Home Assistant REST API client
+- [ ] Home Assistant WebSocket API client
+- [x] Home Assistant DevService (using Home Assistant demo server)
+- [ ] Subscribe/Listen to Home Assistant events/state changes
+- [ ] Injecting generic Home Assistant entities as CDI beans (`@HassEntity("entity_id") Light kitchenLight;`)
+- [ ] Code Generator for completion and type-safe friendly API (`@Inject Home home; home.lights.kitchenLight.turnOn();)
 
-Thanks again, good luck and have fun!
+## Samples
 
-## Documentation
+Check out the [samples](samples) directory for examples on how to use this extension.
 
-The documentation for this extension should be maintained as part of this repository and it is stored in the `docs/` directory.
+## Getting Started 
 
-The layout should follow the [Antora's Standard File and Directory Set](https://docs.antora.org/antora/2.3/standard-directories/).
+To incorporate Quarkus HomeAssistant into your Quarkus project, add the following Maven dependency:
 
-Once the docs are ready to be published, please open a PR including this repository in the [Quarkiverse Docs Antora playbook](https://github.com/quarkiverse/quarkiverse-docs/blob/main/antora-playbook.yml#L7). See an example [here](https://github.com/quarkiverse/quarkiverse-docs/pull/1).
+```xml
+<dependency>
+    <groupId>io.quarkiverse.homeassistant</groupId>
+    <artifactId>quarkus-homeassistant</artifactId>
+    <version>{latest-version}</version>
+</dependency>
+```
+
+Make sure to replace `{latest-version}` with the most recent release version available on [Maven Central](https://search.maven.org/artifact/io.quarkiverse.homeassistant/quarkus-homeassistant).
+
+## Contributing
+
+Feel free to contribute to this project by submitting issues or pull requests.
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+

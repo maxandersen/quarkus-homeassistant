@@ -18,6 +18,11 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
     </dependency>
+    <dependency>
+      <!-- TODO: remove need for vertx-http -->
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-vertx-http</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
