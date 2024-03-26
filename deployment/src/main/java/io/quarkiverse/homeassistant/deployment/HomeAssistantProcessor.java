@@ -3,6 +3,7 @@ package io.quarkiverse.homeassistant.deployment;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.jandex.IndexView;
 import org.jboss.logging.Logger;
@@ -19,10 +20,9 @@ import io.quarkus.deployment.builditem.DockerStatusBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.deployment.console.ConsoleInstalledBuildItem;
-import io.quarkus.deployment.console.StartupLogCompressor;
 import io.quarkus.deployment.dev.devservices.GlobalDevServicesConfig;
 import io.quarkus.deployment.logging.LoggingSetupBuildItem;
-import org.eclipse.microprofile.config.Config;
+
 /**
  * Starts a homeassistant server as dev service if needed.
  */
@@ -68,9 +68,8 @@ public class HomeAssistantProcessor {
             cfg = null;
         }
 
-        if (devService == null) {
-            return null;
-        }
+        devService = starthomeassistant(dockerStatusBuildItem, homeassistantConfig, devServicesConfig,
+                !devServicesSharedNetworkBuildItem.isEmpty(), combinedIndexBuildItem.getIndex());
 
         if (devService.isOwner()) {
             log.info("Dev Services for homeassistant started.");
@@ -108,7 +107,8 @@ public class HomeAssistantProcessor {
         }
 
         if (userConfigured()) {
-
+            log.debug("Not starting dev services for HomeAssistant, as the quarkus.homeassistant.token is configured.");
+            return null;
         }
 
         if (!dockerStatusBuildItem.isDockerAvailable()) {
@@ -128,10 +128,10 @@ public class HomeAssistantProcessor {
 
     private boolean userConfigured() {
         Config config = ConfigProvider.getConfig();
-        String token = config.getValue("quarkus.homeassistant.token", String.class);
+        Optional<String> token = config.getOptionalValue("quarkus.homeassistant.token", String.class);
 
-        if(token==null) {
-            return false;
+        if (token.isPresent()) {
+            return true;
         }
         return false;
     }
