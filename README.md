@@ -1,4 +1,4 @@
-# Quarkus Homeassistant
+# Quarkus HomeAssistant
 
 [![Version](https://img.shields.io/maven-central/v/io.quarkiverse.homeassistant/quarkus-homeassistant?logo=apache-maven&style=flat-square)](https://search.maven.org/artifact/io.quarkiverse.homeassistant/quarkus-homeassistant)
 

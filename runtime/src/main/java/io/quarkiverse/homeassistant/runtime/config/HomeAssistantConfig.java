@@ -15,7 +15,7 @@ public interface HomeAssistantConfig {
      * Hostname for HomeAssistant
      */
     @WithDefault("homeassistant.local")
-    String host();
+    String url();
 
     /**
      * Port for HomeAssistant

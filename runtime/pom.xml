@@ -8,7 +8,7 @@
     <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>quarkus-homeassistant</artifactId>
-  <name>Quarkus Homeassistant - Runtime</name>
+  <name>Quarkus HomeAssistant - Runtime</name>
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>

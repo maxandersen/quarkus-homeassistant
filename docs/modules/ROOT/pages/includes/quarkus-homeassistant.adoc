@@ -10,57 +10,6 @@ h|[[quarkus-homeassistant_configuration]]link:#quarkus-homeassistant_configurati
 h|Type
 h|Default
 
-a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-host]]`link:#quarkus-homeassistant_quarkus-host[quarkus.host]`
-
-
-[.description]
---
-Hostname for HomeAssistant
-
-ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_HOST+++[]
-endif::add-copy-button-to-env-var[]
-ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_HOST+++`
-endif::add-copy-button-to-env-var[]
---|string 
-|`homeassistant.local`
-
-
-a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-port]]`link:#quarkus-homeassistant_quarkus-port[quarkus.port]`
-
-
-[.description]
---
-Port for HomeAssistant
-
-ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_PORT+++[]
-endif::add-copy-button-to-env-var[]
-ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_PORT+++`
-endif::add-copy-button-to-env-var[]
---|int 
-|`8123`
-
-
-a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-token]]`link:#quarkus-homeassistant_quarkus-token[quarkus.token]`
-
-
-[.description]
---
-Token to use for authenticate against HomeAssistant
-
-ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_TOKEN+++[]
-endif::add-copy-button-to-env-var[]
-ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_TOKEN+++`
-endif::add-copy-button-to-env-var[]
---|string 
-|
-
-
 a|icon:lock[title=Fixed at build time] [[quarkus-homeassistant_quarkus-homeassistant-enabled]]`link:#quarkus-homeassistant_quarkus-homeassistant-enabled[quarkus.homeassistant.enabled]`
 
 
@@ -110,5 +59,56 @@ Environment variable: `+++QUARKUS_HOMEASSISTANT_VERBOSE+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`true`
+
+
+a| [[quarkus-homeassistant_quarkus-homeassistant-url]]`link:#quarkus-homeassistant_quarkus-homeassistant-url[quarkus.homeassistant.url]`
+
+
+[.description]
+--
+Hostname for HomeAssistant
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_HOMEASSISTANT_URL+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_HOMEASSISTANT_URL+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|`homeassistant.local`
+
+
+a| [[quarkus-homeassistant_quarkus-homeassistant-port]]`link:#quarkus-homeassistant_quarkus-homeassistant-port[quarkus.homeassistant.port]`
+
+
+[.description]
+--
+Port for HomeAssistant
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_HOMEASSISTANT_PORT+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_HOMEASSISTANT_PORT+++`
+endif::add-copy-button-to-env-var[]
+--|int 
+|`8123`
+
+
+a| [[quarkus-homeassistant_quarkus-homeassistant-token]]`link:#quarkus-homeassistant_quarkus-homeassistant-token[quarkus.homeassistant.token]`
+
+
+[.description]
+--
+Token to use for authenticate against HomeAssistant
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_HOMEASSISTANT_TOKEN+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_HOMEASSISTANT_TOKEN+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|
 
 |===

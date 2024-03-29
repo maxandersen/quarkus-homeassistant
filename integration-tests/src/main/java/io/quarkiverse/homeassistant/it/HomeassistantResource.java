@@ -19,7 +19,7 @@ package io.quarkiverse.homeassistant.it;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class HomeassistantResource {
+public class HomeAssistantResource {
     // add some rest methods here
 
 }

@@ -11,7 +11,7 @@
   <artifactId>quarkus-homeassistant-parent</artifactId>
   <version>999-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Quarkus Homeassistant - Parent</name>
+  <name>Quarkus HomeAssistant - Parent</name>
   <description>HomeAssistant API for Quarkus</description>
   <modules>
     <module>deployment</module>

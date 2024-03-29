@@ -8,7 +8,7 @@
     <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>quarkus-homeassistant-deployment</artifactId>
-  <name>Quarkus Homeassistant - Deployment</name>
+  <name>Quarkus HomeAssistant - Deployment</name>
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>

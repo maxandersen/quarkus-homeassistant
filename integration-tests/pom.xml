@@ -8,7 +8,7 @@
     <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>quarkus-homeassistant-integration-tests</artifactId>
-  <name>Quarkus Homeassistant - Integration Tests</name>
+  <name>Quarkus HomeAssistant - Integration Tests</name>
   <properties>
     <skipITs>true</skipITs>
   </properties>

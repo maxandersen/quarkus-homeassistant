@@ -2,12 +2,10 @@ package io.quarkiverse.homeassistant.deployment;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.jboss.jandex.IndexView;
 import org.jboss.logging.Logger;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
@@ -22,7 +20,7 @@ import io.quarkus.devservices.common.ConfigureUtil;
  */
 public final class HomeAssistantContainer extends GenericContainer<HomeAssistantContainer> {
 
-    public static final String CONFIG_HTTP_SERVER = HomeAssistantProcessor.FEATURE + ".host";
+    public static final String CONFIG_HTTP_SERVER = "quarkus." + HomeAssistantProcessor.FEATURE + ".url";
 
     /**
      * Logger which will be used to capture container STDOUT and STDERR.
@@ -51,16 +49,8 @@ public final class HomeAssistantContainer extends GenericContainer<HomeAssistant
         this.index = index;
 
         super.withLabel(HomeAssistantProcessor.DEV_SERVICE_LABEL, HomeAssistantProcessor.FEATURE);
-        super.withNetwork(Network.SHARED);
+        // super.withNetwork(Network.SHARED);
         super.waitingFor(Wait.forHttp("/").forPort(PORT_HTTP));
-
-        // configure verbose container logging
-        // if (config.verbose()) {
-        //     super.withEnv("MP_VERBOSE", "true");
-        // }
-
-        // forward the container logs
-        //super.withLogConsumer(new JbossContainerLogConsumer(log).withPrefix(HomeassistantProcessor.FEATURE));
     }
 
     @Override
@@ -83,16 +73,14 @@ public final class HomeAssistantContainer extends GenericContainer<HomeAssistant
     public Map<String, String> getExposedConfig() {
         Map<String, String> exposed = new HashMap<>();
 
-        final String port = Objects.toString(getMappedPort(PORT_HTTP));
-
         exposed.put(CONFIG_HTTP_SERVER, getHomeAssistantHttpServer());
         exposed.putAll(super.getEnvMap());
 
-        // quarkus mailer default
-        exposed.put("quarkus.homeassistant.port", port);
-        exposed.put("quarkus.homeassistant.host", getHost());
-        // exposed.put("quarkus.mailer.mock", "false");
-
+        exposed.put("quarkus.homeassistant.token",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI0MzhjOTcwNTVmNjk0NWFmYjBhMjUxM2YzOTRjNmU0NiIsImlhdCI6MTcxMTMxMjE1MiwiZXhwIjoyMDI2NjcyMTUyfQ.cCKzD6ZiGjv-jFR8iy7MxpozBA-vEMYqShv-bh81CiM");
+        //todo: move to processor
+        exposed.put("quarkus.rest-client.\"io.quarkiverse.homeassistant.runtime.HomeAssistantAPI\".url",
+                getHomeAssistantHttpServer());
         return exposed;
     }
 

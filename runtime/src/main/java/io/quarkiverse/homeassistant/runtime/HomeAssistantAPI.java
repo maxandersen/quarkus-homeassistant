@@ -24,17 +24,17 @@ import io.quarkiverse.homeassistant.runtime.model.EventInfo;
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 
 @Path("/api")
-@ClientHeaderParam(name = "Authorization", value = "Bearer ${hass-token}")
+@ClientHeaderParam(name = "Authorization", value = "Bearer ${quarkus.homeassistant.token}")
 @Consumes(MediaType.APPLICATION_JSON)
 @RegisterRestClient
-public interface HomeAssistant {
+public interface HomeAssistantAPI {
 
     @GET
     @Path("/")
     Map<String, String> status();
 
     @GET
-    @Path("/config")
+    @Path("config")
     Config getConfig();
 
     @GET
@@ -58,7 +58,7 @@ public interface HomeAssistant {
     String getErrorLog();
 
     @GET
-    @Path("/api/camera_proxy/{entity}")
+    @Path("api/camera_proxy/{entity}")
     String getCameraProxy(String entity);
 
     @DELETE

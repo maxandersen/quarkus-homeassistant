@@ -19,15 +19,16 @@ public class HomeAssistantDevUIProcessor {
         if (configProps.isPresent()) {
             Map<String, String> config = configProps.get().getConfig();
             final CardPageBuildItem card = new CardPageBuildItem();
-
             // UI
             if (config.containsKey(HomeAssistantContainer.CONFIG_HTTP_SERVER)) {
                 String uiPath = config.get(HomeAssistantContainer.CONFIG_HTTP_SERVER);
-                card.addPage(Page.externalPageBuilder("HomeAssistant UI")
+                card.addPage(Page.externalPageBuilder("HomeAssistant (admin/secret)")
                         .url(uiPath, uiPath)
                         .isHtmlContent()
                         .icon("font-awesome-solid:house"));
+                cardPageBuildItemBuildProducer.produce(card);
             }
         }
+
     }
 }
