@@ -1,4 +1,4 @@
-package org.acme;
+package io.quarkiverse.homeassistant.runtime;
 
 import java.io.IOException;
 import java.net.URI;
@@ -6,18 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.Logger;
-
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.subscription.MultiEmitter;
-import io.smallrye.mutiny.subscription.UniEmitter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
@@ -33,20 +21,37 @@ import jakarta.websocket.SendHandler;
 import jakarta.websocket.SendResult;
 import jakarta.websocket.Session;
 
-@ClientEndpoint
-public class HomeAssistantWS {
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
-    private final Logger logger = Logger.getLogger("HomeAssistant");
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.quarkiverse.homeassistant.runtime.events.GenericEvent;
+import io.quarkiverse.homeassistant.runtime.events.HAEvent;
+import io.quarkiverse.homeassistant.runtime.events.StateChangeEvent;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.subscription.MultiEmitter;
+import io.smallrye.mutiny.subscription.UniEmitter;
+
+@ClientEndpoint
+public class HomeAssistantWS implements AsyncHomeAssistantClient {
+
+    private final Logger logger = Logger.getLogger(HomeAssistantWS.class);
 
     private final String accessToken;
+    private String server;
+    private ObjectMapper mapper;
 
     private String status = "";
 
-    private ObjectMapper mapper;
-
-    private String server;
-
+    // mapped from id to those waiting for response of request
     private Map<Integer, UniEmitter<? super JsonNode>> requestEmitters = new ConcurrentHashMap<>();
+
+    // mapped from id to those listen to stream of events
     private Map<Integer, MultiEmitter<? super JsonNode>> eventEmitters = new ConcurrentHashMap<>();
 
     @Inject
@@ -81,13 +86,13 @@ public class HomeAssistantWS {
 
     @OnOpen
     public void onOpen(Session session) {
-        logger.info("Opening socket to Home Assistant...");
+        logger.info("Opening socket to Home Assistant " + server);
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws JsonMappingException, JsonProcessingException {
         final JsonNode response = mapper.readTree(message);
-        logger.info(response);
+        //logger.info(response);
         String type = response.get("type").asText();
         switch (type) {
             case "auth_required":
@@ -95,7 +100,7 @@ public class HomeAssistantWS {
                 status = "Attempting connection";
                 break;
             case "auth_invalid":
-                logger.warn("Unable to authenticate with Home Assistant: " + response.get("message").asText());
+                logger.error("Unable to authenticate with Home Assistant: " + response.get("message").asText());
                 status = "Failed to connect: " + response.get("message").asText();
                 break;
             case "auth_ok":
@@ -124,7 +129,7 @@ public class HomeAssistantWS {
             default:
                 logger.warn("Unhandled message type: " + response.toPrettyString());
         }
-        logger.info("status: " + status + " resp: " + response.toPrettyString());
+        //logger.info("status: " + status + " resp: " + response.toPrettyString());
     }
 
     private void listenToEvents() {
@@ -210,7 +215,7 @@ public class HomeAssistantWS {
         this.status = status;
     }
 
-    void connect() {
+    public void connect() {
         String endpoint = server + "/api/websocket";
         logger.warn("connect to " + endpoint);
         try {

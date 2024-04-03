@@ -8,7 +8,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.jandex.IndexView;
 import org.jboss.logging.Logger;
 
-import io.quarkiverse.homeassistant.runtime.HomeAssistantContext;
+import io.quarkiverse.homeassistant.runtime.AppHAContext;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.processor.DotNames;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
@@ -55,7 +55,7 @@ public class HomeAssistantProcessor {
     AdditionalBeanBuildItem additionalBeans() {
         return AdditionalBeanBuildItem.builder()
                 .setDefaultScope(DotNames.APPLICATION_SCOPED)
-                .addBeanClass(HomeAssistantContext.class)
+                .addBeanClass(AppHAContext.class)
                 .build();
     }
 

@@ -8,6 +8,9 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkiverse.homeassistant.runtime.IHAContext;
+import io.quarkiverse.homeassistant.runtime.events.GenericEvent;
+import io.quarkiverse.homeassistant.runtime.events.HAEvent;
+import io.quarkiverse.homeassistant.runtime.events.StateChangeEvent;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,11 +30,9 @@ public class GreetingResource {
     @Inject
     IHAContext ha;
 
-    @Inject
-    HomeAssistantWS ws;
 
     void onStart(@Observes StartupEvent ev) throws DeploymentException, IOException {               
-        ws.connect();   
+        ha.ws().connect();   
     }
 
     void onStateChanged(@ObservesAsync GenericEvent ge) {
@@ -49,7 +50,7 @@ public class GreetingResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() throws DeploymentException, IOException {
 
-        JsonNode areas = ws.sendRequest(Map.of("type", "config/entity_registry/list"))
+        JsonNode areas = ha.ws().sendRequest(Map.of("type", "config/entity_registry/list"))
         .await().atMost(Duration.ofSeconds(5));
 
         return "climate: " + ha.getApi().getState("climate.ecobee") + " -> " + areas.getNodeType().toString();

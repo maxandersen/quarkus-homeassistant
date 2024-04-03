@@ -12,16 +12,10 @@ import io.smallrye.config.WithDefault;
 public interface HomeAssistantConfig {
 
     /**
-     * Hostname for HomeAssistant
+     * URL for HomeAssistant
      */
-    @WithDefault("homeassistant.local")
+    @WithDefault("http://homeassistant.local:8123")
     String url();
-
-    /**
-     * Port for HomeAssistant
-     */
-    @WithDefault("8123")
-    int port();
 
     /**
      * Token to use for authenticate against HomeAssistant

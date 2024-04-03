@@ -4,4 +4,6 @@ public interface IHAContext {
 
     HomeAssistantAPI getApi();
 
+    AsyncHomeAssistantClient ws();
+
 }
