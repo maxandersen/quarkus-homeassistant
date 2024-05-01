@@ -11,6 +11,10 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.devui.spi.page.CardPageBuildItem;
 import io.quarkus.devui.spi.page.Page;
 
+/**
+ * Provides the UI page in devui to link to
+ * the HomeAssistant instance.
+ */
 public class HomeAssistantDevUIProcessor {
 
     @BuildStep(onlyIf = IsDevelopment.class)
@@ -22,7 +26,7 @@ public class HomeAssistantDevUIProcessor {
             // UI
             if (config.containsKey(HomeAssistantContainer.CONFIG_HTTP_SERVER)) {
                 String uiPath = config.get(HomeAssistantContainer.CONFIG_HTTP_SERVER);
-                card.addPage(Page.externalPageBuilder("HomeAssistant (admin/secret)")
+                card.addPage(Page.externalPageBuilder("HomeAssistant")
                         .url(uiPath, uiPath)
                         .isHtmlContent()
                         .icon("font-awesome-solid:house"));

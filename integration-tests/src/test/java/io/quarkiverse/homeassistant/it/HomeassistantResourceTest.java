@@ -1,39 +1,35 @@
 package io.quarkiverse.homeassistant.it;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.concurrent.CompletableFuture; // Import CompletableFuture
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 
-import io.quarkiverse.homeassistant.runtime.IHAContext;
-import io.quarkiverse.homeassistant.runtime.events.HAConnected;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.enterprise.event.ObservesAsync;
-import jakarta.inject.Inject;
 
 @QuarkusTest
 public class HomeAssistantResourceTest {
 
-   /*  @Inject
-    IHAContext ha;
-
-    CompletableFuture<HAConnected> received = new CompletableFuture<>(); // Declare CompletableFuture
- 
-    HAConnected haconnect;
-*/
-  /*  public void onConnect(@ObservesAsync HAConnected hace) {
-        received.complete(hace); // Complete the future when event is received
-    }*/
+    /*
+     * @Inject
+     * IHAContext ha;
+     *
+     * CompletableFuture<HAConnected> received = new CompletableFuture<>(); // Declare CompletableFuture
+     *
+     * HAConnected haconnect;
+     */
+    /*
+     * public void onConnect(@ObservesAsync HAConnected hace) {
+     * received.complete(hace); // Complete the future when event is received
+     * }
+     */
 
     @Test
     public void testHelloEndpoint() throws InterruptedException, ExecutionException, TimeoutException {
-       /* ha.ws().connect();
-        HAConnected event = received.get(5, TimeUnit.SECONDS); // Wait for the future to complete with a timeout of 5 seconds
-        assertNotNull(event); // Assert that the event was received
-        */
+        /*
+         * ha.ws().connect();
+         * HAConnected event = received.get(5, TimeUnit.SECONDS); // Wait for the future to complete with a timeout of 5 seconds
+         * assertNotNull(event); // Assert that the event was received
+         */
     }
 }

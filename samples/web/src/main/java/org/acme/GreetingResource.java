@@ -30,9 +30,12 @@ public class GreetingResource {
     @Inject
     IHAContext ha;
 
+   // @Entity("light.kitchen")
+   // Light kitchenLightl;
 
     void onStart(@Observes StartupEvent ev) throws DeploymentException, IOException {               
         ha.ws().connect();   
+       // kitchenLightl.stateChanges().when(l -> l.isOn()).do(...)
     }
 
     void onStateChanged(@ObservesAsync GenericEvent ge) {
@@ -49,7 +52,7 @@ public class GreetingResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() throws DeploymentException, IOException {
-
+        
         JsonNode areas = ha.ws().sendRequest(Map.of("type", "config/entity_registry/list"))
         .await().atMost(Duration.ofSeconds(5));
 
