@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Qute Page</title>
+</head>
+<body>
+<h1>Quarkus HomeAssistant</h1>
+<ul>
+    {#for item in hass.states}
+    <li>{item.id} -> {item.state}</li>
+    <p>{item}</p>
+    {/for}
+</ul>
+</body>
+</html>

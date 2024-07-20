@@ -6,4 +6,5 @@ public interface IHAContext {
 
     AsyncHomeAssistantClient ws();
 
+    void callService(String domain, String service, ServiceTarget target, Object data);
 }

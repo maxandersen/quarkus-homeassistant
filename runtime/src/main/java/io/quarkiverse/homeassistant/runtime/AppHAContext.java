@@ -23,4 +23,9 @@ public class AppHAContext implements IHAContext {
     public HomeAssistantWS ws() {
         return ws;
     }
+
+    @Override
+    public void callService(String domain, String service, ServiceTarget target, Object data) {
+        ws.callService(domain, service, target, data);
+    }
 }

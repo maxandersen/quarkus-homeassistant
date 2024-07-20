@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.quarkiverse.homeassistant.runtime.events.GenericEvent;
 import io.quarkiverse.homeassistant.runtime.events.HAEvent;
@@ -189,7 +190,7 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
         }
     }
 
-    public void getEntities(Session session) {
+    public void getStates(Session session) {
         reply(session, Map.of("id", nextId(), "type", "get_states"));
     }
 
@@ -250,10 +251,10 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
         });
     }
 
-    public Uni<JsonNode> sendRequest(Map<String, Object> input) {
+    public Uni<JsonNode> sendRequest(Object command) {
         return Uni.createFrom().emitter(emitter -> {
             int currentId = nextId();
-            Map<String, Object> requestData = new HashMap<>(input);
+            ObjectNode requestData = (ObjectNode) mapper.valueToTree(command);
             requestData.put("id", currentId);
             requestEmitters.put(currentId, emitter);
 
@@ -272,4 +273,13 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
             }
         });
     }
+
+    public void callService(String domain, String service, ServiceTarget target, Object data) {
+
+        var call = (ObjectNode) mapper.valueToTree(new CallService("call_service", domain, service, target, data));
+
+        sendRequest(call).await().indefinitely();
+
+    }
+
 }

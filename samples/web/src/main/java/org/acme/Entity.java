@@ -1,3 +1,5 @@
+package org.acme;
+
 import io.quarkiverse.homeassistant.runtime.IHAContext;
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
 

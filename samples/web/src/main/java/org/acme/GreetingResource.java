@@ -1,11 +1,8 @@
 package org.acme;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkiverse.homeassistant.runtime.IHAContext;
 import io.quarkiverse.homeassistant.runtime.events.GenericEvent;
@@ -34,12 +31,13 @@ public class GreetingResource {
    // Light kitchenLightl;
 
     void onStart(@Observes StartupEvent ev) throws DeploymentException, IOException {               
-        ha.ws().connect();   
+        ha.ws().connect();
+
        // kitchenLightl.stateChanges().when(l -> l.isOn()).do(...)
     }
 
     void onStateChanged(@ObservesAsync GenericEvent ge) {
-        Log.warn("Generic event " + ge.toString());
+      //  Log.warn("Generic event " + ge.getNode().toPrettyString());
     }
 
     void onStateChanged(@ObservesAsync StateChangeEvent ev) {
@@ -47,15 +45,26 @@ public class GreetingResource {
     }
 
     void onStateChanged(@ObservesAsync HAEvent hev) {
-        Log.warn("ha event once or twice " + hev.toString());
+      //  Log.warn("ha event once or twice " + hev.toString());
     }
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() throws DeploymentException, IOException {
         
-        JsonNode areas = ha.ws().sendRequest(Map.of("type", "config/entity_registry/list"))
-        .await().atMost(Duration.ofSeconds(5));
+      //  JsonNode areas = ha.ws().sendRequest(Map.of("type", "config/entity_registry/list"))
+       // .await().atMost(Duration.ofSeconds(5));
 
-        return "climate: " + ha.getApi().getState("climate.ecobee") + " -> " + areas.getNodeType().toString();
+       // return "climate: " + ha.getApi().getState("climate.ecobee") + " -> " + areas.getNodeType().toString();
+        return "best";
+    }
+
+    @GET
+    @Path("/notify")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String notifi() throws DeploymentException, IOException {
+
+        ha.callService("notify", "persistent_notifcation", null, Map.of("message", "notify me", "title", "Hello World!"));
+
+        return "success";
     }
 }
