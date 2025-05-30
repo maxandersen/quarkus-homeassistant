@@ -286,6 +286,14 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
             });
         }
 
+        public Uni<Boolean> sendRequestBoolean(WebSocketClientConnection connection, String command, Object... list) {
+            Map map = new HashMap();
+            for (int i = 0; i < list.length; i += 2) {
+                map.put(list[i], list[i + 1]);
+            }
+            return sendRequestBoolean(connection, command, map);
+        }
+
         public <T> Uni<T> sendRequest(WebSocketClientConnection connection, JavaType type, String command, Object... list) {
             Map map = new HashMap();
             for (int i = 0; i < list.length; i += 2) {
@@ -305,6 +313,22 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
                     return mapper.treeToValue(node.get("result"), type);
                 } catch (JsonProcessingException e) {
                     throw new IllegalStateException("Could not convert " + node + " to " + type);
+                }
+            });
+        }
+
+        public Uni<Boolean> sendRequesBoolean(WebSocketClientConnection connection, String command,
+                Map<String, Object> arguments) {
+            Map m = new HashMap();
+            m.putAll(arguments);
+            m.put("type", command); // here so arguments can't overrule
+
+            return sendRequest(m, connection).map(node -> {
+                //todo: check more deeply if this is what to expect from HA?
+                if ("success".equals(node.get("result").asText())) {
+                    return true;
+                } else {
+                    return false;
                 }
             });
         }
@@ -340,7 +364,7 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
 
     @Override
     public Uni<Boolean> deleteArea(String id) {
-        return cep.sendRequest(connection, mapper.getTypeFactory().constructType(Area.class), WS_TYPE_AREA_REGISTRY_DELETE,
+        return cep.sendRequestBoolean(connection, WS_TYPE_AREA_REGISTRY_DELETE,
                 "area_id", id);
     }
 

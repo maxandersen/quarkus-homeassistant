@@ -23,13 +23,13 @@ import io.quarkus.deployment.builditem.DockerStatusBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.deployment.console.ConsoleInstalledBuildItem;
-import io.quarkus.deployment.dev.devservices.GlobalDevServicesConfig;
+import io.quarkus.deployment.dev.devservices.DevServicesConfig;
 import io.quarkus.deployment.logging.LoggingSetupBuildItem;
 
 /**
  * Starts a homeassistant server as dev service if needed.
  */
-@BuildSteps(onlyIfNot = IsNormal.class, onlyIf = GlobalDevServicesConfig.Enabled.class)
+@BuildSteps(onlyIfNot = IsNormal.class, onlyIf = DevServicesConfig.Enabled.class)
 public class HomeAssistantProcessor {
 
     private static final Logger log = Logger.getLogger(HomeAssistantProcessor.class);
@@ -66,7 +66,7 @@ public class HomeAssistantProcessor {
             HomeAssistantConfig homeassistantConfig,
             Optional<ConsoleInstalledBuildItem> consoleInstalledBuildItem,
             LoggingSetupBuildItem loggingSetupBuildItem,
-            GlobalDevServicesConfig devServicesConfig,
+            DevServicesConfig devServicesConfig,
             List<DevServicesSharedNetworkBuildItem> devServicesSharedNetworkBuildItem,
             BuildProducer<HomeAssistantDevServicesConfigBuildItem> homeassistantBuildItemBuildProducer,
             CombinedIndexBuildItem combinedIndexBuildItem) {
@@ -108,7 +108,7 @@ public class HomeAssistantProcessor {
     }
 
     private DevServicesResultBuildItem.RunningDevService starthomeassistant(DockerStatusBuildItem dockerStatusBuildItem,
-            HomeAssistantConfig homeassistantConfig, GlobalDevServicesConfig devServicesConfig, boolean useSharedNetwork,
+            HomeAssistantConfig homeassistantConfig, DevServicesConfig devServicesConfig, boolean useSharedNetwork,
             IndexView index) {
 
         if (!homeassistantConfig.enabled()) {
@@ -128,7 +128,7 @@ public class HomeAssistantProcessor {
         }
 
         final HomeAssistantContainer homeassistant = new HomeAssistantContainer(homeassistantConfig, useSharedNetwork, index);
-        devServicesConfig.timeout.ifPresent(homeassistant::withStartupTimeout);
+        devServicesConfig.timeout().ifPresent(homeassistant::withStartupTimeout);
         homeassistant.start();
 
         return new DevServicesResultBuildItem.RunningDevService(FEATURE,

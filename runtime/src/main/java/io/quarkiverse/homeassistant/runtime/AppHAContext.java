@@ -72,7 +72,7 @@ public class AppHAContext implements IHAContext {
             }
 
             @Override
-            public Area deleteArea(String id) {
+            public boolean deleteArea(String id) {
                 return ws.deleteArea(id).await().atMost(timeout);
             }
 

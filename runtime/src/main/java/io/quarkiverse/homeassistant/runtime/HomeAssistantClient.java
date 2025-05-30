@@ -22,7 +22,7 @@ public interface HomeAssistantClient {
 
     Area createArea(String name);
 
-    Area deleteArea(String id);
+    boolean deleteArea(String id);
 
     Area renameArea(String id, String newName);
 }
