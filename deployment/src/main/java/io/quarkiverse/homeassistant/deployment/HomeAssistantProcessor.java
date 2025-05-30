@@ -60,7 +60,7 @@ public class HomeAssistantProcessor {
     }
 
     @BuildStep
-    public DevServicesResultBuildItem starthomeassistantDevService(
+    public DevServicesResultBuildItem startHomeAssistantDevService(
             DockerStatusBuildItem dockerStatusBuildItem,
             LaunchModeBuildItem launchMode,
             HomeAssistantConfig homeassistantConfig,
@@ -122,7 +122,7 @@ public class HomeAssistantProcessor {
             return null;
         }
 
-        if (!dockerStatusBuildItem.isDockerAvailable()) {
+        if (!dockerStatusBuildItem.isContainerRuntimeAvailable()) {
             log.warn("Docker isn't working, not starting dev services for HomeAssistant.");
             return null;
         }

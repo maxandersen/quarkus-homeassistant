@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import io.quarkiverse.homeassistant.runtime.HomeAssistantAPI;
+import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
 import io.quarkiverse.homeassistant.runtime.model.Config;
 import jakarta.inject.Inject;
 import jakarta.websocket.DeploymentException;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import picocli.CommandLine.Command;
 
 import dk.xam.hassq.PPrinter;
@@ -21,8 +20,8 @@ import dk.xam.hassq.Util;
 @Command(name = "config")
 public class ConfigCommand extends BaseCommand {
 
-    @Inject @RestClient
-    HomeAssistantAPI hass;
+    @Inject
+    HomeAssistantClient hass;
 
     @Inject
     PPrinter pretty;

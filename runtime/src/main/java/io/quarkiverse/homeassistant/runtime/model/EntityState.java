@@ -1,5 +1,6 @@
 package io.quarkiverse.homeassistant.runtime.model;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +12,9 @@ public record EntityState(
         @JsonProperty("entity_id") String id,
         @JsonProperty("state") String state,
         @JsonProperty("attributes") Attributes attributes,
-        @JsonProperty("last_changed") String lastChanged,
-        @JsonProperty("last_updated") String lastUpdated,
+        @JsonProperty("last_changed") Instant lastChanged,
+        @JsonProperty("last_reported") Instant lastReported,
+        @JsonProperty("last_updated") Instant lastUpdated,
         @JsonProperty("context") Context context) {
 
     public static record Attributes(

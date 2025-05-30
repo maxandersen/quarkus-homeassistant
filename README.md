@@ -108,7 +108,7 @@ Generic and Type-safe injection of Home Assistant entities as CDI beans.
 
 Check out the [samples](samples/web) directory for examples on how to use this extension.
 
-There is a [cli](samples/cli) directory that has early version of experiment. Eventually will move that to actually 
+There is a [cli](samples/cli) directory that has early version of this experiment. Eventually will move that to actually 
 use the extension.
 
 ## Getting Started 

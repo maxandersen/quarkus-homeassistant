@@ -1,6 +1,7 @@
 package dk.xam.hassq.commands;
 
 import java.io.PrintWriter;
+import java.time.Duration;
 
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.LaunchMode;
@@ -8,6 +9,9 @@ import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
+import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
+import io.quarkiverse.homeassistant.runtime.IHAContext;
+import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.inject.Inject;
 import picocli.CommandLine;
@@ -31,6 +35,13 @@ public class hassq extends BaseCommand implements Runnable, QuarkusApplication {
 
   @Inject
   HomeAssistantWS hass;
+
+  @Produces
+  HomeAssistantClient client(IHAContext ctx) {
+      var c = ctx.blocking(Duration.ofSeconds(2));
+      c.connect(); // hack: this should happen in each client...
+      return c;
+  }
 
     @Override
     public void run() {

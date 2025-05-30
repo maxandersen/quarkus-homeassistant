@@ -1,5 +1,5 @@
 name: quarkus-homeassistant
-title: HomeAssistant
+title: Homeassistant
 version: dev
 nav:
   - modules/ROOT/nav.adoc

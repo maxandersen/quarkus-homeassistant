@@ -8,8 +8,8 @@
 <h1>Quarkus HomeAssistant</h1>
 <ul>
     {#for item in hass.states}
-    <li>{item.id} -> {item.state}</li>
-    <p>{item}</p>
+    <li>{item.id} -> {item.state} - {item.lastChanged}</li>
+   
     {/for}
 </ul>
 </body>

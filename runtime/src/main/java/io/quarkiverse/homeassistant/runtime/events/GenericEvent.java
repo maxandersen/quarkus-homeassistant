@@ -1,16 +1,7 @@
 package io.quarkiverse.homeassistant.runtime.events;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Map;
 
-public class GenericEvent implements HAEvent {
+public class GenericEvent extends HAChangeEvent<Map<String, Object>> {
 
-    JsonNode node;
-
-    public GenericEvent(JsonNode jsonNode) {
-        this.node = jsonNode;
-    }
-
-    public JsonNode getNode() {
-        return node;
-    }
 }

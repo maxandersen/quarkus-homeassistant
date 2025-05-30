@@ -1,4 +1,4 @@
-= Quarkus HomeAssistant
+= Quarkus Homeassistant
 
 include::./includes/attributes.adoc[]
 

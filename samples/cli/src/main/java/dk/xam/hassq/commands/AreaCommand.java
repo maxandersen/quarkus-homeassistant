@@ -11,20 +11,20 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import jakarta.inject.Inject;
 import jakarta.websocket.DeploymentException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import dk.xam.hassq.HomeAssistantWS;
 import dk.xam.hassq.Util;
 
 @Command(name = "area")
 public class AreaCommand extends BaseCommand {
 
     @Inject
-    HomeAssistantWS hass;
+    HomeAssistantClient hass;
 
     @Inject
     ObjectMapper mapper;
@@ -32,7 +32,6 @@ public class AreaCommand extends BaseCommand {
     @Command
     void create(@Parameters(description="one or more area names to create") List<String> names) {
 
-        
         names.forEach(n -> {
             hass.createArea(n);
             System.out.println("Created area: " + n);
