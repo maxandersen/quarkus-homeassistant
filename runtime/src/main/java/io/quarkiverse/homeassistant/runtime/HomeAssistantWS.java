@@ -26,6 +26,7 @@ import io.quarkiverse.homeassistant.runtime.events.ImageProcessingDetectFaceEven
 import io.quarkiverse.homeassistant.runtime.events.StateChangeEvent;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import io.quarkiverse.homeassistant.runtime.model.Config;
+import io.quarkiverse.homeassistant.runtime.model.Entity;
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
 import io.quarkus.websockets.next.*;
 import io.smallrye.mutiny.Multi;
@@ -373,4 +374,16 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
         return cep.sendRequest(connection, mapper.getTypeFactory().constructType(Area.class), WS_TYPE_AREA_REGISTRY_UPDATE,
                 "area_id", id, "name", newName);
     }
+
+    @Override
+    public Uni<HAEvent> subscribeToEvents(String event) {
+        return cep.sendRequest(connection, mapper.getTypeFactory().constructType(HAEvent.class), "subscribe_events",
+                "event_type", event);
+    }
+
+	@Override
+	public Uni<List<Entity>> getEntities() {
+		return cep.sendRequest(connection, mapper.getTypeFactory().constructCollectionType(List.class, Entity.class),
+				"config/entity_registry/list");
+	}
 }

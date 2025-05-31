@@ -19,7 +19,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ParseResult;
 
 import dk.xam.hassq.CLIConfigSource;
-import dk.xam.hassq.HomeAssistantWS;
 @QuarkusMain
 @Command(name = "hassq", mixinStandardHelpOptions = true, 
           subcommands = { StateCommand.class, AreaCommand.class, EntityCommand.class, EventCommand.class, ConfigCommand.class},
@@ -33,8 +32,6 @@ public class hassq extends BaseCommand implements Runnable, QuarkusApplication {
     return json;
   }
 
-  @Inject
-  HomeAssistantWS hass;
 
   @Produces
   HomeAssistantClient client(IHAContext ctx) {

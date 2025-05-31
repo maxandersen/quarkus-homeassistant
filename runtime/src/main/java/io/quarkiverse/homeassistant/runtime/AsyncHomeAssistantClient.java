@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.quarkiverse.homeassistant.runtime.events.HAEvent;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import io.quarkiverse.homeassistant.runtime.model.Config;
+import io.quarkiverse.homeassistant.runtime.model.Entity;
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
 import io.smallrye.mutiny.Uni;
 
@@ -26,5 +28,9 @@ public interface AsyncHomeAssistantClient {
     Uni<Boolean> deleteArea(String id);
 
     Uni<Area> renameArea(String id, String newName);
+
+    Uni<HAEvent> subscribeToEvents(String event);
+
+    Uni<List<Entity>> getEntities();
 
 }

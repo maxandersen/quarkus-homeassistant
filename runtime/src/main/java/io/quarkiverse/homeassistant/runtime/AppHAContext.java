@@ -2,6 +2,7 @@ package io.quarkiverse.homeassistant.runtime;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Consumer;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -9,9 +10,12 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.quarkiverse.homeassistant.runtime.events.HAEvent;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import io.quarkiverse.homeassistant.runtime.model.Config;
+import io.quarkiverse.homeassistant.runtime.model.Entity;
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
+import io.smallrye.mutiny.Multi;
 
 @ApplicationScoped
 public class AppHAContext implements IHAContext {
@@ -80,6 +84,16 @@ public class AppHAContext implements IHAContext {
             public Area renameArea(String id, String newName) {
                 return ws.renameArea(id, newName).await().atMost(timeout);
             }
+
+			@Override
+			public List<Entity> getEntities() {
+				return ws.getEntities().await().atMost(timeout);
+			}
+
+			@Override
+			public void subscribeToEvents(String eventFilter, Consumer<HAEvent> callback) {
+				ws.subscribeToEvents(eventFilter).subscribe().with(e->callback.accept(e));
+			}
         };
     }
 }

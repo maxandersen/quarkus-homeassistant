@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
 
 import io.quarkus.logging.Log;
 
+import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
 import io.quarkiverse.homeassistant.runtime.model.Entity;
 import jakarta.inject.Inject;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import dk.xam.hassq.HomeAssistantWS;
 import dk.xam.hassq.PPrinter;
 import dk.xam.hassq.Util;
 
@@ -24,7 +24,7 @@ public class EntityCommand extends BaseCommand {
     @Inject PPrinter pretty;
     
     @Inject
-    HomeAssistantWS ha;
+    HomeAssistantClient ha;
 
     @Command(name = "list")
     public void list(@Parameters(arity="0..1") Optional<String> entityFilter, @Option(names="--state") Optional<String> stateFilter) {

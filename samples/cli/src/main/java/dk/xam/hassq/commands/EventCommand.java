@@ -3,25 +3,22 @@ package dk.xam.hassq.commands;
 import static dk.xam.hassq.Util.column;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
-import io.quarkus.logging.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
+import io.quarkiverse.homeassistant.runtime.events.HAEvent;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import jakarta.inject.Inject;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import dk.xam.hassq.HomeAssistantWS;
 import dk.xam.hassq.Util;
 
 @Command(name = "event")
 public class EventCommand extends BaseCommand {
 
     @Inject
-    HomeAssistantWS hass;
+    HomeAssistantClient hass;
 
     @Inject
     ObjectMapper mapper;
@@ -30,32 +27,16 @@ public class EventCommand extends BaseCommand {
     void watch(@Parameters(description="Event(s) name to monitor") List<String> event) {
 
         if(event == null || event.isEmpty()) {
-            hass.watch(null, this::callback);
+            hass.subscribeToEvents(null, this::callback);
         } else {
             event.forEach(e -> {
                 System.out.println("Watching for event: " + e);
-                hass.watch(e, this::callback);
+                hass.subscribeToEvents(e, this::callback);
             });
         }
-
-        Log.info("Waiting for events...");
-        try {
-            var msg = hass.waitForMessage();
-            System.out.println("Event: " + msg);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
     }
 
-    void callback(String msg) {
+    void callback(HAEvent msg) {
         System.out.println("Event: " + msg);
     }
     
