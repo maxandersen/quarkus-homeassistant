@@ -35,8 +35,8 @@ public class hassq extends BaseCommand implements Runnable, QuarkusApplication {
 
   @Produces
   HomeAssistantClient client(IHAContext ctx) {
-      var c = ctx.blocking(Duration.ofSeconds(2));
-      c.connect(); // hack: this should happen in each client...
+      var c = ctx.blocking(Duration.ofSeconds(5));
+      c.connect();
       return c;
   }
 

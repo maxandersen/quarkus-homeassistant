@@ -3,18 +3,14 @@ package dk.xam.hassq.commands;
 import static dk.xam.hassq.Util.column;
 import static dk.xam.hassq.Util.stringToFilter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import jakarta.inject.Inject;
-import jakarta.websocket.DeploymentException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
@@ -71,7 +67,7 @@ public class AreaCommand extends BaseCommand {
 
 
     @Command
-    void list(@Parameters(arity="0..1") Optional<String> areaFilter) throws IOException, DeploymentException, InterruptedException, ExecutionException, TimeoutException {
+    void list(@Parameters(arity="0..1") Optional<String> areaFilter) {
        // var hass = new HomeAssistantWS(mapper, "bogus");
 
        var areas = hass.getAreas();

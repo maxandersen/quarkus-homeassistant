@@ -10,11 +10,21 @@ public class CLIConfigSource implements ConfigSource {
     private static final Map<String, String> configuration = new HashMap<>();
 
     static {
-        configuration.put("hass-server", "http://homeassistant.local:8123");
+        String defaultServer = "http://homeassistant.local:8123";
+        configuration.put("hass-server", defaultServer);
+        configuration.put("quarkus.homeassistant.url", defaultServer);
+        configuration.put("quarkus.rest-client.homeassistant-api.url", defaultServer);
     }
 
     public static void put(String key, String value) {
         configuration.put(key, value);
+        // Map CLI args to extension config keys
+        if ("hass-server".equals(key)) {
+            configuration.put("quarkus.homeassistant.url", value);
+            configuration.put("quarkus.rest-client.homeassistant-api.url", value);
+        } else if ("hass-token".equals(key)) {
+            configuration.put("quarkus.homeassistant.token", value);
+        }
     }
 
     @Override

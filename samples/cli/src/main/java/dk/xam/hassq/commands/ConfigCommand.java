@@ -3,15 +3,11 @@ package dk.xam.hassq.commands;
 import static dk.xam.hassq.Util.column;
 import static dk.xam.hassq.Util.str;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import io.quarkiverse.homeassistant.runtime.HomeAssistantClient;
 import io.quarkiverse.homeassistant.runtime.model.Config;
 import jakarta.inject.Inject;
-import jakarta.websocket.DeploymentException;
 import picocli.CommandLine.Command;
 
 import dk.xam.hassq.PPrinter;
@@ -27,7 +23,7 @@ public class ConfigCommand extends BaseCommand {
     PPrinter pretty;
     
     @Command
-    void full() throws IOException, DeploymentException, InterruptedException, ExecutionException, TimeoutException {
+    void full() {
 
        var data = List.of(hass.getConfig());
        
@@ -51,7 +47,7 @@ public class ConfigCommand extends BaseCommand {
     }
 
     @Command
-    void components() throws IOException, DeploymentException, InterruptedException, ExecutionException, TimeoutException {
+    void components() {
 
        var data = hass.getConfig().components();
        

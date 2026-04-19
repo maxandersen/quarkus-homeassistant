@@ -6,6 +6,10 @@ public class NoTokenTestProfile implements QuarkusTestProfile {
     
     @Override
     public Map<String, String> getConfigOverrides() {
-        return Map.of("hass-token", "");
+        return Map.of(
+                "hass-token", "",
+                "quarkus.homeassistant.token", "invalid-token",
+                "quarkus.homeassistant.devservices.enabled", "false"
+        );
     }
 }
