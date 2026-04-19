@@ -396,9 +396,21 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
     }
 
     @Override
-    public Uni<HAEvent> subscribeToEvents(String event) {
-        return cep.sendRequest(connection, mapper.getTypeFactory().constructType(HAEvent.class), "subscribe_events",
-                "event_type", event);
+    public Multi<HAEvent> subscribeToEvents(String event) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("type", "subscribe_events");
+        if (event != null && !event.isEmpty()) {
+            request.put("event_type", event);
+        }
+        return cep.listenToRequest(request, connection)
+                .filter(r -> "event".equals(r.has("type") ? r.get("type").asText() : null))
+                .map(r -> {
+                    try {
+                        return (HAEvent) mapper.treeToValue(r.get("event"), GenericEvent.class);
+                    } catch (JsonProcessingException e) {
+                        throw new IllegalStateException("Could not parse event: " + r, e);
+                    }
+                });
     }
 
     @Override
