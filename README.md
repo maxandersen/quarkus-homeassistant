@@ -26,10 +26,7 @@ Below are the features that are currently available and planned for this extensi
 
 ## Home Assistant WebSocket API client
 
-Currently using the undertow based Jakarta WebSocket API but will switch to the Quarkus WebSocket.next API to make it
-much more straight forward.
-
-For now only basic event handling is supported. Uses CDI type-safe event observers to listen to events.
+Uses the Quarkus WebSocket Next API (`quarkus-websockets-next`). CDI type-safe event observers are used to listen to events.
 
 ```java
     @Inject

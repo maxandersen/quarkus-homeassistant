@@ -82,6 +82,10 @@ public class HomeAssistantProcessor {
         devService = starthomeassistant(dockerStatusBuildItem, homeassistantConfig, devServicesConfig,
                 !devServicesSharedNetworkBuildItem.isEmpty(), combinedIndexBuildItem.getIndex());
 
+        if (devService == null) {
+            return null;
+        }
+
         if (devService.isOwner()) {
             log.info("Dev Services for homeassistant started.");
             homeassistantBuildItemBuildProducer.produce(new HomeAssistantDevServicesConfigBuildItem(devService.getConfig()));
