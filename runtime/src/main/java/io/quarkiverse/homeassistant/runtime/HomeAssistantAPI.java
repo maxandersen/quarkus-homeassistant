@@ -26,7 +26,7 @@ import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 @Path("/api")
 @ClientHeaderParam(name = "Authorization", value = "Bearer ${quarkus.homeassistant.token}")
 @Consumes(MediaType.APPLICATION_JSON)
-@RegisterRestClient
+@RegisterRestClient(configKey = "homeassistant-api")
 public interface HomeAssistantAPI {
 
     @GET

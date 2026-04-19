@@ -87,8 +87,7 @@ public final class HomeAssistantContainer extends GenericContainer<HomeAssistant
         //todo: find way to have token generated/exchanged rather than hardcoded to specific image
         exposed.put("quarkus.homeassistant.token",
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI0MzhjOTcwNTVmNjk0NWFmYjBhMjUxM2YzOTRjNmU0NiIsImlhdCI6MTcxMTMxMjE1MiwiZXhwIjoyMDI2NjcyMTUyfQ.cCKzD6ZiGjv-jFR8iy7MxpozBA-vEMYqShv-bh81CiM");
-        //todo: move to processor
-        exposed.put("quarkus.rest-client.\"io.quarkiverse.homeassistant.runtime.HomeAssistantAPI\".url",
+        exposed.put("quarkus.rest-client.homeassistant-api.url",
                 getHomeAssistantHttpServer());
         return exposed;
     }
