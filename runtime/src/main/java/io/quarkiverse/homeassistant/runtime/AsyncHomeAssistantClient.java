@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkiverse.homeassistant.runtime.events.HAEvent;
+import io.quarkiverse.homeassistant.runtime.events.StateChangeEvent;
 import io.quarkiverse.homeassistant.runtime.model.Area;
 import io.quarkiverse.homeassistant.runtime.model.Config;
 import io.quarkiverse.homeassistant.runtime.model.Entity;
@@ -35,5 +36,10 @@ public interface AsyncHomeAssistantClient {
     Uni<List<Entity>> getEntities();
 
     Uni<Void> callService(String domain, String service, ServiceTarget target, Object data);
+
+    /**
+     * Returns a broadcast Multi of all state change events from the WebSocket connection.
+     */
+    Multi<StateChangeEvent> stateChanges();
 
 }

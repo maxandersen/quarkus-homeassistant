@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import jakarta.inject.Inject;
@@ -16,6 +18,7 @@ import io.quarkiverse.homeassistant.runtime.HAEntity;
 import io.quarkiverse.homeassistant.runtime.HassEntity;
 import io.quarkiverse.homeassistant.runtime.IHAContext;
 import io.quarkiverse.homeassistant.runtime.ServiceTarget;
+import io.quarkiverse.homeassistant.runtime.model.EntityState;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -78,5 +81,26 @@ public class HomeAssistantAPITest {
     public void testEntityTurnOff() {
         bedLight.turnOff();
         assertThat(bedLight.getState().state()).isEqualTo("off");
+    }
+
+    @Test
+    public void testStateChanges() throws Exception {
+        // Ensure light is off first
+        bedLight.turnOff();
+
+        // Subscribe to state changes and capture the next one
+        CompletableFuture<EntityState> nextState = new CompletableFuture<>();
+        bedLight.stateChanges()
+                .subscribe().with(
+                        nextState::complete,
+                        nextState::completeExceptionally);
+
+        // Trigger a state change
+        bedLight.turnOn();
+
+        // Wait for the event
+        EntityState state = nextState.get(5, TimeUnit.SECONDS);
+        assertThat(state).isNotNull();
+        assertThat(state.state()).isEqualTo("on");
     }
 }

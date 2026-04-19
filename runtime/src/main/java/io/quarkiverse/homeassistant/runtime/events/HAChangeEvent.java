@@ -2,10 +2,14 @@ package io.quarkiverse.homeassistant.runtime.events;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class HAChangeEvent<DataType> implements HAEvent {
+    @JsonProperty("event_type")
     private String eventType;
     private DataType data;
     private String origin;
+    @JsonProperty("time_fired")
     private Instant timeFired;
     private Context context;
 

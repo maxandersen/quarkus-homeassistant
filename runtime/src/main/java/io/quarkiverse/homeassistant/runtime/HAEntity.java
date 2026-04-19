@@ -2,8 +2,10 @@ package io.quarkiverse.homeassistant.runtime;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
+import io.smallrye.mutiny.Multi;
 
 /**
  * A wrapper around a Home Assistant entity that provides convenience methods
@@ -93,6 +95,25 @@ public class HAEntity {
         requireContext();
         ServiceTarget target = new ServiceTarget(List.of(entityId), null, null);
         context.callService(domain, service, target, data);
+    }
+
+    /**
+     * Returns a reactive stream of state changes for this entity.
+     * Filters the global state change stream to only emit events for this entity.
+     */
+    public Multi<EntityState> stateChanges() {
+        requireContext();
+        return context.ws().stateChanges()
+                .filter(e -> e.getData() != null && entityId.equals(e.getData().getEntityId()))
+                .map(e -> e.getData().getNewState());
+    }
+
+    /**
+     * Register a callback that fires on every state change for this entity.
+     * The callback runs on the Vert.x event loop — keep it non-blocking.
+     */
+    public void onStateChange(Consumer<EntityState> callback) {
+        stateChanges().subscribe().with(callback);
     }
 
     private void requireContext() {

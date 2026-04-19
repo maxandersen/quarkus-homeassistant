@@ -31,6 +31,7 @@ import io.quarkiverse.homeassistant.runtime.model.EntityState;
 import io.quarkus.websockets.next.*;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.subscription.BackPressureStrategy;
 import io.smallrye.mutiny.subscription.MultiEmitter;
 import io.smallrye.mutiny.subscription.UniEmitter;
 
@@ -59,6 +60,15 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
     ClientEndpoint cep; // make sure cep have connection to atomiid map to avoid concurrency conflicts
 
     private WebSocketClientConnection connection;
+
+    // Shared subscriber list for state change broadcasts — lives on the singleton, not the per-connection endpoint
+    static final List<MultiEmitter<? super StateChangeEvent>> stateChangeSubscribers = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    static void emitStateChangeToSubscribers(StateChangeEvent evt) {
+        for (var emitter : stateChangeSubscribers) {
+            emitter.emit(evt);
+        }
+    }
 
     public HomeAssistantWS(
             @ConfigProperty(name = "quarkus.homeassistant.url") String server, ObjectMapper mapper) {
@@ -216,9 +226,9 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
                             if (eventType.equals("state_changed")) {
                                 try {
                                     var value = mapper.treeToValue(r.get("event"), StateChangeEvent.class);
-                                    logger.warn("state changed! json:" + r);
-                                    logger.info("state changed! real: " + value);
+                                    logger.info("state changed: " + value.getData().getEntityId());
                                     event.fireAsync(value);
+                                    emitStateChangeToSubscribers(value);
                                 } catch (JsonProcessingException | IllegalArgumentException e) {
                                     //todo: handle error?
                                     e.printStackTrace();
@@ -423,5 +433,13 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
     public Uni<Void> callService(String domain, String service, ServiceTarget target, Object data) {
         CallService command = new CallService("call_service", domain, service, target, data);
         return cep.sendRequest(command, connection).replaceWithVoid();
+    }
+
+    @Override
+    public Multi<StateChangeEvent> stateChanges() {
+        return Multi.createFrom().emitter(emitter -> {
+            stateChangeSubscribers.add(emitter);
+            emitter.onTermination(() -> stateChangeSubscribers.remove(emitter));
+        }, BackPressureStrategy.BUFFER);
     }
 }
