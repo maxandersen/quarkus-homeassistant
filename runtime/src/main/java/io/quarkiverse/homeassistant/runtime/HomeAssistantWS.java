@@ -28,6 +28,7 @@ import io.quarkiverse.homeassistant.runtime.model.Area;
 import io.quarkiverse.homeassistant.runtime.model.Config;
 import io.quarkiverse.homeassistant.runtime.model.Entity;
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
+import io.quarkus.arc.Arc;
 import io.quarkus.websockets.next.*;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -59,7 +60,10 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
     @Inject
     ClientEndpoint cep; // make sure cep have connection to atomiid map to avoid concurrency conflicts
 
-    private WebSocketClientConnection connection;
+    private volatile WebSocketClientConnection connection;
+    private volatile boolean reconnectEnabled = false;
+    private static final long INITIAL_BACKOFF_MS = 1000;
+    private static final long MAX_BACKOFF_MS = 30000;
 
     // Shared subscriber list for state change broadcasts — lives on the singleton, not the per-connection endpoint
     static final List<MultiEmitter<? super StateChangeEvent>> stateChangeSubscribers = new java.util.concurrent.CopyOnWriteArrayList<>();
@@ -82,6 +86,32 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
             return;
         }
         connection = connector.baseUri(server).connectAndAwait();
+        reconnectEnabled = true;
+    }
+
+    /**
+     * Called by the ClientEndpoint when the connection is closed unexpectedly.
+     * Attempts to reconnect with exponential backoff.
+     */
+    void scheduleReconnect() {
+        if (!reconnectEnabled) {
+            return;
+        }
+        Thread.ofVirtual().name("ha-reconnect").start(() -> {
+            long backoff = INITIAL_BACKOFF_MS;
+            while (reconnectEnabled) {
+                try {
+                    logger.infof("Reconnecting to Home Assistant in %d ms...", backoff);
+                    Thread.sleep(backoff);
+                    connection = connector.baseUri(server).connectAndAwait();
+                    logger.info("Reconnected to Home Assistant.");
+                    return;
+                } catch (Exception e) {
+                    logger.warnf("Reconnect failed: %s", e.getMessage());
+                    backoff = Math.min(backoff * 2, MAX_BACKOFF_MS);
+                }
+            }
+        });
     }
 
     /**
@@ -209,6 +239,12 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
                 connection.userData().put(new UserData.TypedKey<HAConnectionState>("state"), state);
             }
             return state;
+        }
+
+        @OnClose
+        void onClose(WebSocketClientConnection connection) {
+            logger.warn("WebSocket connection to Home Assistant closed.");
+            Arc.container().instance(HomeAssistantWS.class).get().scheduleReconnect();
         }
 
         /**
