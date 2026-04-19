@@ -68,6 +68,9 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
 
     @Override
     public void connect() {
+        if (connection != null && connection.isOpen()) {
+            return;
+        }
         connection = connector.baseUri(server).connectAndAwait();
     }
 
@@ -110,11 +113,28 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
             boolean success = msg.has("success") ? msg.get("success").asBoolean() : true;
 
             if (!success) {
-                logger.error("Error from Home Assistant: " + msg.get("message").asText());
+                var errorNode = msg.has("error") ? msg.get("error").get("message") : msg.get("message");
+                String errorMsg = errorNode != null ? errorNode.asText() : msg.toPrettyString();
+                logger.error("Error from Home Assistant: " + errorMsg);
+
+                // Fail any waiting emitter for this message ID
+                int id = msg.has("id") ? msg.get("id").asInt() : -1;
+                if (id >= 0) {
+                    var state = state(connection);
+                    var emitter = state.requestEmitters.remove(id);
+                    if (emitter != null) {
+                        emitter.fail(new IllegalStateException("Home Assistant error: " + errorMsg));
+                    }
+                }
                 return null;
             }
 
-            String type = msg.get("type").asText();
+            var typeNode = msg.get("type");
+            if (typeNode == null) {
+                logger.warn("Received message without type field: " + msg.toPrettyString());
+                return null;
+            }
+            String type = typeNode.asText();
 
             String status = null;
 
@@ -385,5 +405,11 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
     public Uni<List<Entity>> getEntities() {
         return cep.sendRequest(connection, mapper.getTypeFactory().constructCollectionType(List.class, Entity.class),
                 "config/entity_registry/list");
+    }
+
+    @Override
+    public Uni<Void> callService(String domain, String service, ServiceTarget target, Object data) {
+        CallService command = new CallService("call_service", domain, service, target, data);
+        return cep.sendRequest(command, connection).replaceWithVoid();
     }
 }

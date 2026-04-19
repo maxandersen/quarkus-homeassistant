@@ -38,7 +38,7 @@ public class AppHAContext implements IHAContext {
 
     @Override
     public void callService(String domain, String service, ServiceTarget target, Object data) {
-        //  ws.callService(domain, service, target, data);
+        ws.callService(domain, service, target, data).await().indefinitely();
     }
 
     @Override
@@ -82,6 +82,11 @@ public class AppHAContext implements IHAContext {
             @Override
             public Area renameArea(String id, String newName) {
                 return ws.renameArea(id, newName).await().atMost(timeout);
+            }
+
+            @Override
+            public void callService(String domain, String service, ServiceTarget target, Object data) {
+                ws.callService(domain, service, target, data).await().atMost(timeout);
             }
 
             @Override

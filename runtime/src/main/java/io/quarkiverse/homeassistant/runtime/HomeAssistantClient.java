@@ -31,6 +31,8 @@ public interface HomeAssistantClient {
 
     List<Entity> getEntities();
 
+    void callService(String domain, String service, ServiceTarget target, Object data);
+
     void subscribeToEvents(String e, Consumer<HAEvent> callback);
 
 }

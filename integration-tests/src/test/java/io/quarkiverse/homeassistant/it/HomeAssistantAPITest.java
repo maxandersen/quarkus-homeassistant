@@ -3,6 +3,7 @@ package io.quarkiverse.homeassistant.it;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.quarkiverse.homeassistant.runtime.IHAContext;
+import io.quarkiverse.homeassistant.runtime.ServiceTarget;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -43,5 +45,13 @@ public class HomeAssistantAPITest {
     @Test
     public void testGetStates() {
         assertThat(ha.ws().getStates().await().atMost(Duration.ofSeconds(4))).isNotEmpty();
+    }
+
+    @Test
+    public void testCallService() {
+        // Call turn_on on a demo light entity — should not throw
+        ServiceTarget target = new ServiceTarget(List.of("light.bed_light"), null, null);
+        assertThatNoException().isThrownBy(
+                () -> ha.ws().callService("light", "turn_on", target, null).await().atMost(Duration.ofSeconds(4)));
     }
 }

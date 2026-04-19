@@ -33,4 +33,6 @@ public interface AsyncHomeAssistantClient {
 
     Uni<List<Entity>> getEntities();
 
+    Uni<Void> callService(String domain, String service, ServiceTarget target, Object data);
+
 }
