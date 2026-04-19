@@ -12,6 +12,8 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.quarkiverse.homeassistant.runtime.HAEntity;
+import io.quarkiverse.homeassistant.runtime.HassEntity;
 import io.quarkiverse.homeassistant.runtime.IHAContext;
 import io.quarkiverse.homeassistant.runtime.ServiceTarget;
 import io.quarkus.test.junit.QuarkusTest;
@@ -21,6 +23,10 @@ public class HomeAssistantAPITest {
 
     @Inject
     IHAContext ha;
+
+    @Inject
+    @HassEntity("light.bed_light")
+    HAEntity bedLight;
 
     @BeforeEach
     void setup() {
@@ -53,5 +59,24 @@ public class HomeAssistantAPITest {
         ServiceTarget target = new ServiceTarget(List.of("light.bed_light"), null, null);
         assertThatNoException().isThrownBy(
                 () -> ha.ws().callService("light", "turn_on", target, null).await().atMost(Duration.ofSeconds(4)));
+    }
+
+    @Test
+    public void testEntityInjection() {
+        assertThat(bedLight).isNotNull();
+        assertThat(bedLight.getEntityId()).isEqualTo("light.bed_light");
+        assertThat(bedLight.getDomain()).isEqualTo("light");
+    }
+
+    @Test
+    public void testEntityTurnOn() {
+        bedLight.turnOn();
+        assertThat(bedLight.getState().state()).isEqualTo("on");
+    }
+
+    @Test
+    public void testEntityTurnOff() {
+        bedLight.turnOff();
+        assertThat(bedLight.getState().state()).isEqualTo("off");
     }
 }
