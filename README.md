@@ -4,50 +4,81 @@
 
 This extension allows you to interact with [Home Assistant](https://www.home-assistant.io/) from Quarkus applications.
 
-
-## Work-in-progress
-
-This extension is currently a work-in-progress and although it is functional, expect its API's and approach to change as we refine it.
-
 ## Features
 
-Below are the features that are currently available and planned for this extension:
-
-## Home Assistant REST API client. 
+### REST API Client
 
 ```java
-    @Inject
-    IHAContext ha;
+@Inject
+IHAContext ha;
 
-    void doStuff() {
-        ha.getApi().getStates().forEach(System.out::println);
-    }
+void doStuff() {
+    ha.getApi().getStates().forEach(System.out::println);
+}
 ``` 
 
-## Home Assistant WebSocket API client
+### Entity Injection with `@HassEntity`
 
-Uses the Quarkus WebSocket Next API (`quarkus-websockets-next`). CDI type-safe event observers are used to listen to events.
+Inject Home Assistant entities directly as CDI beans with convenience methods:
 
 ```java
-    @Inject
-    IHAContext ha;
+@Inject
+@HassEntity("light.kitchen")
+HAEntity kitchenLight;
 
-    void onStart(@Observes StartupEvent ev) throws DeploymentException, IOException {               
-        ha.ws().connect();
-    }
-
-   void onStateChanged(@ObservesAsync GenericEvent ge) {
-        Log.info("Generic event " + ge.getNode().toPrettyString());
-    }
-
-    void onStateChanged(@ObservesAsync StateChangeEvent ev) {
-        Log.info("state changed! " + ev.event.toPrettyString());
-    }
+void controlLight() {
+    kitchenLight.turnOn();
+    kitchenLight.turnOff();
+    kitchenLight.toggle();
+    
+    EntityState state = kitchenLight.getState();
+    System.out.println("Light is " + state.state());
+}
 ```
 
-## Home Assistant DevService
+### Reactive State Change Streams
 
-If no configuration is provided, a HomeAssistant demo instance is setup for you as a devservice.
+Subscribe to state changes using Mutiny `Multi`:
+
+```java
+kitchenLight.stateChanges()
+    .filter(s -> "on".equals(s.state()))
+    .subscribe().with(s -> log.info("Kitchen light turned on!"));
+```
+
+Or use a simple callback:
+
+```java
+kitchenLight.onStateChange(state -> 
+    log.info("State changed to: " + state.state()));
+```
+
+### WebSocket API
+
+Uses the Quarkus WebSocket Next API for real-time communication. CDI type-safe event observers listen to events:
+
+```java
+@Inject
+IHAContext ha;
+
+void onStart(@Observes StartupEvent ev) {               
+    ha.ws().connect();
+}
+
+void onStateChanged(@ObservesAsync StateChangeEvent ev) {
+    Log.info("State changed: " + ev.getData().getEntityId());
+}
+
+void onAnyEvent(@ObservesAsync GenericEvent ge) {
+    Log.info("Event: " + ge.getEventType());
+}
+```
+
+Features: event subscriptions (all or filtered), area management, entity registry, service calls, automatic reconnection with exponential backoff.
+
+### Dev Service
+
+If no configuration is provided, a Home Assistant demo instance starts automatically as a Dev Service.
 
 Username: `admin`, password: `secret`.
 
@@ -59,58 +90,31 @@ and embedded in the dev-ui:
 
 ![HomeAssistant devservice](images/devservice.png)
 
-## Inject of Home Assistant entities (Not yet implemented)
+## Work-in-progress
 
-Generic and Type-safe injection of Home Assistant entities as CDI beans.
+The following features are planned but not yet implemented:
 
-```java
-    @Inject
-    @HassEntity("light.kitchen")
-    Entity kitchenLight;
+### Code Generator for type-safe API
 
-    void doStuff() {
-        kitchenLight.turnOn();
-    }
-```
-
-## Async-friendly API (Not yet implemented)
+Build-time code generation for a type-safe, per-home entity API:
 
 ```java
+@Inject 
+Home home;
 
-    @Inject Home home;
-
-    void listen() {
-         kitchenLightl.stateChanges().when(l -> l.isOn()).do(...)
-    }
-```
-
-## Code Generator for completion and type-safe API (Not yet implemented)
-
-```java
-    @Inject 
-    Andersens home;
-
-    @Inject
-    KitchenMotion motion;
-
-    void setup() {
-        motion.stateChanges()   
-                .when(e->e.newState().isOn())
-                .subscribe(x -> home.entities().lights().office().turnOn()) 
-        };
-    }
+void setup() {
+    home.entities().lights().office().turnOn();
+}
 ```
 
 ## Samples
 
-Check out the [samples](samples/web) directory for examples on how to use this extension.
-
-There is a [cli](samples/cli) directory that has early version of this experiment. Eventually will move that to actually 
-use the extension.
+- [Web sample](samples/web) — Qute web UI with Home Assistant integration
+- [CLI sample](samples/cli) — Command-line tool using the extension for areas, entities, states, events
 
 ## Getting Started 
 
-To incorporate Quarkus HomeAssistant into your Quarkus project, add the following Maven dependency:
+Add the dependency to your Quarkus project:
 
 ```xml
 <dependency>
@@ -120,12 +124,17 @@ To incorporate Quarkus HomeAssistant into your Quarkus project, add the followin
 </dependency>
 ```
 
-Make sure to replace `{latest-version}` with the most recent release version available on [Maven Central](https://search.maven.org/artifact/io.quarkiverse.homeassistant/quarkus-homeassistant).
+To use your own Home Assistant instance instead of the Dev Service:
 
+```properties
+quarkus.homeassistant.url=http://your-ha-instance:8123
+quarkus.homeassistant.token=your-long-lived-access-token
+quarkus.rest-client.homeassistant-api.url=${quarkus.homeassistant.url}
+```
 
 ## Inspiration
 
-Inspired by netDaemon that allows you to write .NET applications that interact with Home Assistant in a similar type-safe fashion. 
+Inspired by [netDaemon](https://netdaemon.xyz/) that allows you to write .NET applications that interact with Home Assistant in a similar type-safe fashion. 
 
 ## Contributing
 
@@ -134,4 +143,3 @@ Feel free to contribute to this project by submitting issues or pull requests.
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-

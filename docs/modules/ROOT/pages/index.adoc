@@ -1,14 +1,13 @@
-= Quarkus Homeassistant
+= Quarkus HomeAssistant
 
 include::./includes/attributes.adoc[]
 
-TIP: Describe what the extension does here.
+This extension allows you to interact with https://www.home-assistant.io/[Home Assistant] from Quarkus applications.
+It provides a REST API client, WebSocket API client with reactive event streams, CDI-based entity injection, and a Dev Service that auto-starts a Home Assistant instance for development.
 
 == Installation
 
-If you want to use this extension, you need to add the `io.quarkiverse.homeassistant:quarkus-homeassistant` extension first to your build file.
-
-For instance, with Maven, add the following dependency to your POM file:
+Add the following dependency to your project:
 
 [source,xml,subs=attributes+]
 ----
@@ -19,9 +18,157 @@ For instance, with Maven, add the following dependency to your POM file:
 </dependency>
 ----
 
-[[extension-configuration-reference]]
-== Extension Configuration Reference
+== Quick Start
 
-TIP: Remove this section if you don't have Quarkus configuration properties in your extension.
+The extension auto-starts a Home Assistant demo instance as a Dev Service — no configuration needed for development.
+Just add the dependency and start your app with `mvn quarkus:dev`.
+
+The Dev Service provides:
+
+* A running Home Assistant instance with demo entities (lights, sensors, etc.)
+* A pre-configured authentication token
+* An embedded Home Assistant UI tile in the Quarkus Dev UI
+
+== Features
+
+=== REST API Client
+
+Inject the `IHAContext` to access the Home Assistant REST API:
+
+[source,java]
+----
+@Inject
+IHAContext ha;
+
+void listStates() {
+    ha.getApi().getStates().forEach(state ->
+        System.out.println(state.id() + " = " + state.state()));
+}
+----
+
+The REST API client supports: states (get/set/delete), configuration, events, services, error log, and camera proxy.
+
+=== Entity Injection with `@HassEntity`
+
+Inject Home Assistant entities directly as CDI beans:
+
+[source,java]
+----
+@Inject
+@HassEntity("light.kitchen")
+HAEntity kitchenLight;
+
+void controlLight() {
+    kitchenLight.turnOn();
+    kitchenLight.turnOff();
+    kitchenLight.toggle();
+
+    EntityState state = kitchenLight.getState();
+    System.out.println("Light is " + state.state());
+}
+----
+
+`HAEntity` provides convenience methods for common operations and delegates to the appropriate Home Assistant service calls.
+You can also call any service with additional data:
+
+[source,java]
+----
+kitchenLight.callService("turn_on", Map.of("brightness", 128));
+----
+
+=== Reactive State Change Streams
+
+Subscribe to state changes for an entity using Mutiny `Multi`:
+
+[source,java]
+----
+@Inject
+@HassEntity("sensor.temperature")
+HAEntity tempSensor;
+
+void watchTemperature() {
+    tempSensor.stateChanges()
+        .filter(state -> Double.parseDouble(state.state()) > 25.0)
+        .subscribe().with(state ->
+            System.out.println("Temperature alert: " + state.state()));
+}
+----
+
+For a simpler callback style:
+
+[source,java]
+----
+tempSensor.onStateChange(state ->
+    System.out.println("Temperature: " + state.state()));
+----
+
+=== WebSocket API
+
+The extension uses the Quarkus WebSocket Next API for real-time communication with Home Assistant.
+The WebSocket client supports:
+
+* Subscribing to events (all or filtered by event type)
+* Area management (list, create, delete, rename)
+* Entity registry queries
+* State queries
+* Service calls
+* Automatic reconnection with exponential backoff on disconnect
+
+[source,java]
+----
+@Inject
+IHAContext ha;
+
+void subscribeToEvents() {
+    ha.ws().connect();
+    ha.ws().subscribeToEvents("state_changed")
+        .subscribe().with(event ->
+            System.out.println("Event: " + event));
+}
+----
+
+=== CDI Event Observers
+
+Home Assistant events are also available as CDI async events:
+
+[source,java]
+----
+void onStateChanged(@ObservesAsync StateChangeEvent ev) {
+    System.out.println("State changed: " + ev.getData().getEntityId());
+}
+
+void onAnyEvent(@ObservesAsync GenericEvent ev) {
+    System.out.println("Event: " + ev.getEventType());
+}
+----
+
+=== Dev Service
+
+When no `quarkus.homeassistant.token` is configured, the extension automatically starts a Home Assistant demo instance using Docker.
+
+* **Username:** `admin`
+* **Password:** `secret`
+* The Home Assistant UI is available in the Quarkus Dev UI
+
+To use your own Home Assistant instance instead, configure:
+
+[source,properties]
+----
+quarkus.homeassistant.url=http://your-ha-instance:8123
+quarkus.homeassistant.token=your-long-lived-access-token
+quarkus.rest-client.homeassistant-api.url=${quarkus.homeassistant.url}
+----
+
+To customize the Dev Service Docker image:
+
+[source,properties]
+----
+quarkus.homeassistant.image-name=ghcr.io/maxandersen/private-demo:main
+----
+
+== Configuration
+
+[[extension-configuration-reference]]
+=== Extension Configuration Reference
 
 include::includes/quarkus-homeassistant.adoc[leveloffset=+1, opts=optional]
