@@ -381,9 +381,9 @@ public class HomeAssistantWS implements AsyncHomeAssistantClient {
                 "event_type", event);
     }
 
-	@Override
-	public Uni<List<Entity>> getEntities() {
-		return cep.sendRequest(connection, mapper.getTypeFactory().constructCollectionType(List.class, Entity.class),
-				"config/entity_registry/list");
-	}
+    @Override
+    public Uni<List<Entity>> getEntities() {
+        return cep.sendRequest(connection, mapper.getTypeFactory().constructCollectionType(List.class, Entity.class),
+                "config/entity_registry/list");
+    }
 }

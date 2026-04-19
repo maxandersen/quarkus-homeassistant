@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jboss.jandex.IndexView;
 import org.jboss.logging.Logger;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
 import io.quarkus.devservices.common.ConfigureUtil;
@@ -50,7 +50,15 @@ public final class HomeAssistantContainer extends GenericContainer<HomeAssistant
 
         super.withLabel(HomeAssistantProcessor.DEV_SERVICE_LABEL, HomeAssistantProcessor.FEATURE);
         // super.withNetwork(Network.SHARED);
-        super.waitingFor(Wait.forHttp("/").forPort(PORT_HTTP));
+        // Wait until the API is fully ready and demo entities are loaded.
+        // Just waiting for "/" only checks the UI is up, but the REST API
+        // and demo platform entities may not be available yet.
+        super.waitingFor(new HttpWaitStrategy()
+                .forPort(PORT_HTTP)
+                .forPath("/api/states")
+                .forResponsePredicate(body -> body.contains("entity_id"))
+                .withHeader("Authorization",
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI0MzhjOTcwNTVmNjk0NWFmYjBhMjUxM2YzOTRjNmU0NiIsImlhdCI6MTcxMTMxMjE1MiwiZXhwIjoyMDI2NjcyMTUyfQ.cCKzD6ZiGjv-jFR8iy7MxpozBA-vEMYqShv-bh81CiM"));
     }
 
     @Override

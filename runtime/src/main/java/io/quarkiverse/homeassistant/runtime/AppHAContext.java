@@ -15,7 +15,6 @@ import io.quarkiverse.homeassistant.runtime.model.Area;
 import io.quarkiverse.homeassistant.runtime.model.Config;
 import io.quarkiverse.homeassistant.runtime.model.Entity;
 import io.quarkiverse.homeassistant.runtime.model.EntityState;
-import io.smallrye.mutiny.Multi;
 
 @ApplicationScoped
 public class AppHAContext implements IHAContext {
@@ -85,15 +84,15 @@ public class AppHAContext implements IHAContext {
                 return ws.renameArea(id, newName).await().atMost(timeout);
             }
 
-			@Override
-			public List<Entity> getEntities() {
-				return ws.getEntities().await().atMost(timeout);
-			}
+            @Override
+            public List<Entity> getEntities() {
+                return ws.getEntities().await().atMost(timeout);
+            }
 
-			@Override
-			public void subscribeToEvents(String eventFilter, Consumer<HAEvent> callback) {
-				ws.subscribeToEvents(eventFilter).subscribe().with(e->callback.accept(e));
-			}
+            @Override
+            public void subscribeToEvents(String eventFilter, Consumer<HAEvent> callback) {
+                ws.subscribeToEvents(eventFilter).subscribe().with(e -> callback.accept(e));
+            }
         };
     }
 }
